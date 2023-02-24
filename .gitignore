@@ -1,0 +1,7 @@
+.idea/
+.vscode/
+node_modules/
+.env
+config/config.json
+dist/
+yarn-error.log
