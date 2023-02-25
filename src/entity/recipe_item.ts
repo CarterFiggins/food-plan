@@ -1,19 +1,25 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  BaseEntity,
+} from "typeorm";
 import { Meal } from "./meal";
 import { Ingredient } from "./ingredient";
 
 @Entity()
-export class RecipeItem {
+export class RecipeItem extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  count: string;
+  amount: number;
 
   @Column()
   unit: string;
 
-  @Column()
+  @Column({ nullable: true })
   container: string;
 
   @ManyToOne(() => Meal, (meal) => meal.recipeItems)

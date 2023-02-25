@@ -1,13 +1,22 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  BaseEntity,
+} from "typeorm";
 import { RecipeItem } from "./recipe_item";
 
 @Entity()
-export class Ingredient {
+export class Ingredient extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   name: string;
+
+  @Column({ nullable: true })
+  storage_life: number;
 
   @OneToMany(() => RecipeItem, (recipeItem) => recipeItem.ingredient)
   recipeItems: RecipeItem[];
