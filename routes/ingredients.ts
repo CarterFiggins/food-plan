@@ -14,16 +14,11 @@ export default () => {
   });
 
   router.post("/", async (req: Request, res: Response) => {
-    console.log("req.body");
-    console.log(req.body);
     const input = JSON.parse(req.body);
-    console.log("input");
-    console.log(input);
     const ingredient = new Ingredient();
     ingredient.name = input.name;
     ingredient.storage_life = input.storageLife;
     const savedIngredient = await AppDataSource.manager.save(ingredient);
-    console.log(savedIngredient);
     res.json(savedIngredient);
   });
 

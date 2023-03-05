@@ -1,30 +1,52 @@
 import express, { Request, Response } from "express";
+import _ from "lodash";
 import { AppDataSource } from "../src/data-source";
 import { Meal } from "../src/entity/meal";
+import { Ingredient } from "../src/entity/ingredient";
+import { RecipeItem } from "../src/entity/recipe_item";
 
 export default () => {
   const router = express.Router();
 
   router.get("/", async (req: Request, res: Response) => {
-    console.log("HELLO THERE");
-    const test = await AppDataSource.getRepository(Meal).find({
+    const meals = await AppDataSource.getRepository(Meal).find({
       relations: ["recipeItems", "recipeItems.ingredient"],
     });
-    console.log(test);
-    res.json(test);
+    res.json(meals);
   });
 
   router.post("/", async (req: Request, res: Response) => {
-    console.log("req.body");
-    console.log(req.body);
-    const input = JSON.parse(req.body);
-    console.log("input");
-    console.log(input);
+    const ingredientRepository = AppDataSource.getRepository(Ingredient);
+    const mealRepository = AppDataSource.getRepository(Meal);
+    const recipeItemRepository = AppDataSource.getRepository(RecipeItem);
+
     const meal = new Meal();
-    meal.name = input.name;
-    const savedMeal = await AppDataSource.manager.save(meal);
-    console.log(savedMeal);
-    res.json(meal);
+    meal.name = req.body.mealName;
+    mealRepository.save(meal);
+
+    for (const input of req.body.ingredients) {
+      if (!input.name) {
+        continue;
+      }
+      let ingredient: null | Ingredient = null;
+      if (input.id) {
+        ingredient = await ingredientRepository.findOne({
+          where: { id: input.id },
+        });
+      } else {
+        ingredient = new Ingredient();
+        ingredient.name = input.name;
+        await ingredientRepository.save(ingredient);
+      }
+      const recipeItem = new RecipeItem();
+      recipeItem.amount = input.amount;
+      recipeItem.unit = input.unit;
+      recipeItem.meal = meal;
+      recipeItem.ingredient = ingredient as Ingredient;
+      await recipeItemRepository.save(recipeItem);
+    }
+
+    res.status(200);
   });
 
   return router;

@@ -13,14 +13,11 @@ export class RecipeItem extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: "decimal" })
   amount: number;
 
-  @Column()
-  unit: string;
-
   @Column({ nullable: true })
-  container: string;
+  unit: string;
 
   @ManyToOne(() => Meal, (meal) => meal.recipeItems)
   meal: Meal;
