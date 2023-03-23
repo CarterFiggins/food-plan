@@ -1,9 +1,10 @@
 import express, { Request, Response } from "express";
-import _ from "lodash";
+import _, { find } from "lodash";
 import { AppDataSource } from "../src/data-source";
 import { Meal } from "../src/entity/meal";
 import { Ingredient } from "../src/entity/ingredient";
 import { RecipeItem } from "../src/entity/recipe_item";
+import { In } from "typeorm";
 
 export default () => {
   const router = express.Router();
@@ -13,6 +14,67 @@ export default () => {
       relations: ["recipeItems", "recipeItems.ingredient"],
     });
     res.json(meals);
+  });
+
+  router.get("/:id", async (req: Request, res: Response) => {
+    const meal = await AppDataSource.getRepository(Meal).findOne({
+      where: { id: _.parseInt(req.params.id) },
+      relations: ["recipeItems", "recipeItems.ingredient"],
+    });
+    res.json(meal);
+  });
+
+  router.delete("/:id", async (req: Request, res: Response) => {
+    const recipeItemRepository = AppDataSource.getRepository(RecipeItem);
+    const items = await recipeItemRepository.find({
+      where: { meal: { id: _.parseInt(req.params.id) } },
+      relations: ["meal"],
+    });
+
+    await recipeItemRepository.remove(items);
+    await AppDataSource.getRepository(Meal).delete(req.params.id);
+    res.json({ message: `Deleted ${req.params.id}` });
+  });
+
+  router.put("/:id", async (req: Request, res: Response) => {
+    const recipeItemRepository = AppDataSource.getRepository(RecipeItem);
+    const mealRepository = AppDataSource.getRepository(Meal);
+    const ingredientRepository = AppDataSource.getRepository(Ingredient);
+
+    await AppDataSource.getRepository(Meal).update(req.body.meal.id, {
+      name: req.body.meal.name,
+    });
+
+    for (const item of req.body.meal.recipeItems) {
+      let ingredient = await ingredientRepository.findOne({
+        where: { name: item.ingredient.name },
+      });
+      if (!ingredient) {
+        ingredient = new Ingredient();
+        ingredient.name = item.ingredient.name;
+        await ingredientRepository.save(ingredient);
+      }
+      if (item.id === "new") {
+        const meal = await mealRepository.findOne({
+          where: { id: req.body.meal.id },
+        });
+        const recipeItem = new RecipeItem();
+        recipeItem.amount = item.amount;
+        recipeItem.unit = item.unit;
+        recipeItem.meal = meal as Meal;
+        recipeItem.ingredient = ingredient as Ingredient;
+        await recipeItemRepository.save(recipeItem);
+      } else {
+        await recipeItemRepository.update(item.id, {
+          amount: item.amount,
+          unit: item.unit,
+          ingredient: ingredient,
+        });
+      }
+    }
+
+    recipeItemRepository.delete({ id: In(req.body.deletedIds) });
+    res.json({ message: `Updated ${req.body.meal.name}` });
   });
 
   router.post("/", async (req: Request, res: Response) => {
@@ -46,7 +108,7 @@ export default () => {
       await recipeItemRepository.save(recipeItem);
     }
 
-    res.status(200);
+    res.json({ message: "OK" });
   });
 
   return router;
