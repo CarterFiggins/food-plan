@@ -18,6 +18,9 @@ export class Ingredient extends BaseEntity {
   @Column({ nullable: true })
   storage_life: number;
 
+  @Column({ nullable: true })
+  storage_count: number;
+
   @OneToMany(() => RecipeItem, (recipeItem) => recipeItem.ingredient)
   recipeItems: RecipeItem[];
 }

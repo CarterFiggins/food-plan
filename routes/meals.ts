@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import _, { find } from "lodash";
+import _ from "lodash";
 import { AppDataSource } from "../src/data-source";
 import { Meal } from "../src/entity/meal";
 import { Ingredient } from "../src/entity/ingredient";
