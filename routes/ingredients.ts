@@ -28,6 +28,7 @@ export default () => {
       name: ingredient.name,
       storage_count: _.parseInt(ingredient.storageCount) || 0,
       storage_life: _.parseInt(ingredient.storageLife) || 0,
+      storage_unit: ingredient.storageUnit
     })
     res.json({ message: `Updated ${req.body.ingredient.name}` });
   });
