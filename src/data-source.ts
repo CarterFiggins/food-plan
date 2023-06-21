@@ -5,6 +5,7 @@ import fs from "fs";
 import { Meal } from "./entity/meal";
 import { Ingredient } from "./entity/ingredient";
 import { RecipeItem } from "./entity/recipe_item";
+import { MealPlan } from "./entity/meal_plan";
 
 dotenv.config();
 
@@ -17,7 +18,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   synchronize: true,
   logging: true,
-  entities: [Meal, Ingredient, RecipeItem],
+  entities: [Meal, Ingredient, RecipeItem, MealPlan],
   migrations: [],
   subscribers: [],
 });

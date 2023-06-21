@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import mealRoutes from "../routes/meals";
 import ingredientRoutes from "../routes/ingredients";
+import mealPlanRoutes from "../routes/meal_plans";
 import "reflect-metadata";
 import { AppDataSource } from "./data-source";
 
@@ -24,6 +25,8 @@ async function main() {
   app.use("/meals", mealRoutes());
   // Ingredients routes
   app.use("/ingredients", ingredientRoutes());
+  // MealPlans routes
+  app.use("/meal-plan", mealPlanRoutes());
 
   app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
