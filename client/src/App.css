@@ -1,0 +1,218 @@
+.App {
+  text-align: center;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.ml-8 {
+  margin-left: 8px;
+}
+
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.aline-left {
+  text-align: left;
+}
+
+input {
+  border: 0;
+  padding: 8px;
+  border-radius: 3px;
+  font-family: inherit;
+}
+
+a {
+  color: #bdbdbd;
+  text-decoration: none;
+  font-size: 16px;
+  transition: color 0.2s ease-in-out;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+a:hover {
+  color: #8b8b8b;
+}
+
+.ingredient-span {
+  padding: 10px;
+}
+
+.create {
+}
+
+.create-name {
+  font-size: 20px;
+  margin: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.create-name label {
+  padding: 10px;
+  font-weight: 400;
+}
+
+.create-name input {
+  font-size: 20px;
+  padding: 5px;
+  text-align: center;
+}
+
+.create-body {
+  display: flex;
+  justify-content: space-around;
+  margin: 10px;
+}
+
+.input-container label {
+  padding: 5px;
+}
+
+.select-container label{
+  padding: 5px;
+}
+
+.select-container select{
+  padding: 8px;
+  border: 0;
+  border-radius: 3px;
+}
+
+body {
+  background-color: #23242a;
+  color: white;
+}
+
+.food-item {
+  padding: 1rem;
+  margin: 1rem;
+  background-color: #0a0f36;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 300px;
+  min-height: 200px;
+}
+
+.food-storage-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.food-item-value {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #727272;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #4e4e4e;
+}
+
+table {
+  border-collapse: collapse;
+  margin: 20px;
+}
+
+th,
+td {
+  padding: 12px;
+}
+
+th {
+  background-color: #4d4d4d;
+  color: white;
+}
+
+table tr:nth-child(even) {
+  background-color: #4d4d4d;
+}
+
+table tr:nth-child(odd) {
+  background-color: #333333;
+}
+
+thead {
+  border-bottom: 2px solid #fff;
+}
+
+.meal-plan-days {
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.day-box {
+  padding: 1rem;
+  margin: 0.5rem;
+  border-radius: 3px;
+  background-color: #4d4d4d;
+}
+
+.day-name {
+  font-weight: bold;
+  padding-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.select-meal {
+  font-size: 1.1rem;
+  border-radius: 3px;
+  padding: 0.2rem;
+  color: #e4e4e4;
+  border-color: #e4e4e4;
+  background-color: #4d4d4d;
+}
+
+.amount-box-container {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 1rem;
+}
+
+.amount-box {
+  padding: 0.5rem;
+  margin: 0.5rem;
+  border-radius: 3px;
+  background-color: #8b8b8b;
+  text-align: left;
+}
+
+.red-amount {
+  background-color: darkred;
+}
+
+.green-amount {
+  background-color: darkgreen;
+}
+
+.leftover {
+  font-weight: bold;
+}
+
+.meal-made-container {
+  padding-top: 1rem;
+}
+
+.meal-made-button {
+  margin: 0 .5rem;
+}
