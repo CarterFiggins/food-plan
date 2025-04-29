@@ -28,10 +28,6 @@ export function CreateShoppingList({
   meals: MealInterface[];
 })  {
 
-  console.log('ingredients')
-  console.log(ingredients)
-  console.log('meals')
-  console.log(meals)
   return (
     <div>
       <div>

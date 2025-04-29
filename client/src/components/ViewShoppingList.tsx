@@ -18,8 +18,6 @@ export default function LoadViewShoppingList() {
       .then((data) => setData(data));
   }, [flip]);
 
-  console.log(data)
-
   return (
     <div>
       {data ? <ViewShoppingList data={data} refetch={refetch} /> : <h1>Loading...</h1>}
@@ -35,8 +33,6 @@ export function ViewShoppingList({
   refetch: () => void;
   }) {
   
-  console.log(data)
-
   return (
     <div>
       <h1>
