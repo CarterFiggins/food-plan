@@ -4,6 +4,12 @@ export interface MealInterface {
   recipeItems: RecipeItemsInterfaceIngredient[];
 }
 
+export interface ShoppingListInterface {
+  id: string;
+  name: string;
+  is_favorite: boolean;
+}
+
 export interface MealPlanInterface {
   id: string;
   position: number;
@@ -31,5 +37,5 @@ export interface IngredientInterface {
   storage_life?: number;
   storage_count?: number;
   storage_unit?: string;
-  recipeItems?: RecipeItemsInterfaceMeal[];
+  meals?: MealInterface[];
 }

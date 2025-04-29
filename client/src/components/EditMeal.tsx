@@ -118,6 +118,8 @@ function EditMeal({ meal: initialMeal }: { meal: MealInterface }) {
     setMeal(cloneMeal);
   };
 
+  console.log("meal")
+  console.log(meal)
   return (
     <div>
       <h1>Edit {initialMeal.name}</h1>

@@ -22,7 +22,7 @@ function EditIngredients({ ingredient }: { ingredient: IngredientInterface }) {
   const navigate = useNavigate();
   const [storageUnit, setStorageUnit] = useState(ingredient.storage_unit);
   const [ingredientName, ingredientNameInput] = useInput({
-    name: "Meal Name:",
+    name: "Ingredient Name:",
     type: "text",
     defaultValue: ingredient.name,
   });

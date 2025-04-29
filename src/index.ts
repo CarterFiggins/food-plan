@@ -1,18 +1,13 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import mealRoutes from "../routes/meals";
-import ingredientRoutes from "../routes/ingredients";
-import mealPlanRoutes from "../routes/meal_plans";
-import "reflect-metadata";
-import { AppDataSource } from "./data-source";
+import mealRoutes from "./routes/meals";
+import ingredientRoutes from "./routes/ingredients";
+import mealPlanRoutes from "./routes/meal_plans";
+import shoppingListRoutes from "./routes/shopping_list";
 
 dotenv.config();
 
 async function main() {
-  await AppDataSource.initialize();
-
-  console.log("Inserting a new user into the database...");
-
   const app: Express = express();
   const port = process.env.PORT;
   app.use(express.json());
@@ -27,6 +22,8 @@ async function main() {
   app.use("/ingredients", ingredientRoutes());
   // MealPlans routes
   app.use("/meal-plan", mealPlanRoutes());
+
+  app.use("/shopping-list", shoppingListRoutes());
 
   app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${port}`);

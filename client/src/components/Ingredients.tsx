@@ -63,9 +63,9 @@ export function Ingredients({
               <td>{ingredient.name}</td>
               <td>{ingredient.storage_life || "N/A"}</td>
               <td>
-                {_.map(ingredient.recipeItems, (item) => (
-                  <span className="ingredient-span" key={item.id}>
-                    {item?.meal?.name}
+                {_.map(ingredient.meals, (meal) => (
+                  <span className="ingredient-span" key={meal.id}>
+                    {meal?.name}
                   </span>
                 ))}
               </td>
@@ -74,7 +74,7 @@ export function Ingredients({
               </td>
               <td className="flex">
                 <Link to={`/ingredients/edit/${ingredient.id}`}>Edit</Link>
-                {ingredient?.recipeItems?.length ?
+                {ingredient?.meals?.length ?
                   <></>
                   :
                   <button onClick={() => deleteIngredient(ingredient.id, ingredient.name)}>
