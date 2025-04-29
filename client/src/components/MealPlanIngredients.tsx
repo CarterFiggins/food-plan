@@ -32,7 +32,11 @@ export default function MealPlanIngredients({ mealPlans }: { mealPlans: MealPlan
           planIngredients[item.ingredient.name].current.amount = storageCount;
         }
       } else {
-        planIngredients[item.ingredient.name].plan[unit] += _.toNumber(amount);
+        if (!planIngredients[item.ingredient.name].plan[unit]) {
+          planIngredients[item.ingredient.name].plan[unit] = _.toNumber(amount);
+        } else {
+          planIngredients[item.ingredient.name].plan[unit] += _.toNumber(amount);
+        }
       }
     })
   })
