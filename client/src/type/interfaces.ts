@@ -1,3 +1,5 @@
+import { Ingredients } from "../components/Ingredients";
+
 export interface MealInterface {
   id: string;
   name: string;
@@ -8,6 +10,19 @@ export interface ShoppingListInterface {
   id: string;
   name: string;
   is_favorite: boolean;
+}
+
+export interface ViewShoppingListInterface {
+  id: string;
+  name: string;
+  is_favorite: boolean;
+  shoppingItems: ShoppingItemInterface[];
+}
+
+export interface ShoppingItemInterface {
+  id: string;
+  ingredient: IngredientInterface;
+  is_checked: boolean;
 }
 
 export interface MealPlanInterface {
