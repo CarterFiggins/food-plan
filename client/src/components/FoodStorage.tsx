@@ -66,7 +66,6 @@ export function FoodStorage(data: MealInterface[]) {
             if (!ingredientMap[item.ingredient.name][ingredientUnit]) {
               ingredientMap[item.ingredient.name][ingredientUnit] = 0;
             }
-            console.log(convertedAmount);
             convertedSuccess = true;
             ingredientMap[item.ingredient.name][ingredientUnit] += convertedAmount * timesMealsBy
           }

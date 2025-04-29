@@ -22,8 +22,6 @@ export default function LoadMeals() {
       .then((data) => setMealPlans(data));
   }, [flip]);
 
-  console.log("mealPlans")
-  console.log(mealPlans)
   return (
     <div>
       {meals && mealPlans ? <MealPlan meals={meals} mealPlans={mealPlans} refetch={refetch} /> : <h1>Loading...</h1>}

@@ -62,9 +62,6 @@ export default () => {
         .leftJoin("ingredient", "ingredient.id", "recipe_item.ingredient_id")
         .groupBy("meal.id")
         .first();
-      
-      console.log("meal")
-      console.log(meal)
 
       res.json(meal);
     } catch (error) {
