@@ -40,9 +40,9 @@ export function ViewShoppingList({
       </h1>
       {_.map(data.shoppingItems, (item) => {
         return (
-          <div>
+          <h3 key={item.id}>
             {item.is_checked ? "[X]" : "[ ]"} {item.ingredient.name}
-          </div>
+          </h3>
         )
       })}
     </div>

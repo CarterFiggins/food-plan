@@ -58,6 +58,33 @@ export default () => {
   });
 
   router.post("/", async (req, res) => {
+    try {
+      const { shoppingItems, shoppingListName, isFavorite } = req.body;
+
+      await db.transaction(async (trx) => { 
+        const [newShoppingList] = await trx("shopping_list").insert({ name: shoppingListName, is_favorite: isFavorite }).returning("*");
+        
+        for (const item of shoppingItems) {
+          let ingredient = await trx("ingredient").where({ id: item.id }).first()
+          const [shoppingItem] = await trx("shopping_item").insert({
+            is_checked: false,
+            shopping_list_id: newShoppingList.id,
+            ingredient_id: ingredient.id,
+          }).returning("*");
+          await Promise.all(_.map(item.units, (amount, unit) => {
+            return trx("item_unit").insert({
+              shopping_item_id: shoppingItem.id,
+              amount,
+              unit,
+            })
+          }))
+        }
+      })
+      res.json({ message: "Shopping list created successfully" });
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
   });
 
   router.delete("/:id", async (req, res) => {

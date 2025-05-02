@@ -1,9 +1,16 @@
-import { Ingredients } from "../components/Ingredients";
-
 export interface MealInterface {
   id: string;
   name: string;
   recipeItems: RecipeItemsInterfaceIngredient[];
+}
+
+export interface IngredientItemInterface {
+  id: string;
+  ingredient: IngredientInterface;
+  amount: number;
+  ingredientAmount?: number;
+  unit: string;
+  ingredientUnit?: string;
 }
 
 export interface ShoppingListInterface {

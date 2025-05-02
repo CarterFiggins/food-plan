@@ -35,18 +35,18 @@ export function ShoppingList({
   return (
     <div>
       <div>
-        <div>
+        <h3>
           <Link to="/create-shopping-list">Create Shopping List</Link>
-        </div>
-        Shopping list
+        </h3>
+        <h2>Shopping list</h2>
       </div>
       <div>
         {_.map(data, (list) => (
-          <div key={list.id}>
+          <h3 key={list.id}>
             <Link to={`/shopping-list/${list.id}`}>
              {list.is_favorite ? "*" : ""} {list.name}
             </Link>
-          </div>
+          </h3>
         ))}
       </div>
     </div>

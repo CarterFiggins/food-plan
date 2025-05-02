@@ -16,5 +16,5 @@ export default function useInput({ name, type, defaultValue = "" }: any) {
     </div>
   );
 
-  return [value, input];
+  return [value, input, setValue];
 }
