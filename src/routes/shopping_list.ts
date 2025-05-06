@@ -96,13 +96,58 @@ export default () => {
   });
 
   router.put("/:id", async (req, res) => {
+    try {
+      const { shoppingListId, newShoppingItems, deletedShoppingItemIds, shoppingListName, isFavorite, newMeals, deletedMealsIds } = req.body;
+
+      await db.transaction(async (trx) => {
+        await trx("shopping_list").where({ id: shoppingListId }).update({ name: shoppingListName, is_favorite: isFavorite });
+
+
+        for (const itemId of deletedShoppingItemIds) {
+          await trx("shopping_item").where({ id: itemId }).del();
+        }
+
+        for (const item of newShoppingItems) {
+          let ingredient = await trx("ingredient").where({ id: item.id }).first()
+          const [shoppingItem] = await trx("shopping_item").insert({
+            is_checked: false,
+            shopping_list_id: shoppingListId,
+            ingredient_id: ingredient.id,
+          }).returning("*");
+          await Promise.all(_.map(item.units, (amount, unit) => {
+            return trx("item_unit").insert({
+              shopping_item_id: shoppingItem.id,
+              amount,
+              unit,
+            })
+          }))
+        }
+
+        for (const mealId of deletedMealsIds) {
+          await db("meal_shopping_list").where({
+            shopping_list_id: shoppingListId,
+            meal_id: mealId,
+          }).del();
+        }
+
+        for (const meal of newMeals) {
+          await trx("meal_shopping_list").insert({
+            shopping_list_id: shoppingListId,
+            meal_id: meal.id
+          });
+        }
+
+      });
+      res.json({ message: "Shopping list edited successfully" });
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ error: getErrorMessage(error) });
+    }
   });
 
   router.post("/", async (req, res) => {
     try {
       const { shoppingItems, shoppingListName, isFavorite, meals } = req.body;
-      
-      console.log(meals)
 
       await db.transaction(async (trx) => { 
         const [newShoppingList] = await trx("shopping_list").insert({ name: shoppingListName, is_favorite: isFavorite }).returning("*");

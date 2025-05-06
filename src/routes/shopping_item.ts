@@ -9,13 +9,6 @@ function getErrorMessage(error: unknown) {
 export default () => {
   const router = express.Router();
 
-  router.get("/", async (req, res) => {
-  });
-
-  // Gets all info about shopping list and all shopping items
-  router.get("/:id", async (req, res) => {
-  });
-
   router.put("/all", async (req, res) => {
     try {
       const { checked,  shoppingListId} = req.body
@@ -36,14 +29,6 @@ export default () => {
       console.log(error)
       res.status(500).json({ error: getErrorMessage(error) });
     }
-  });
-
-
-
-  router.post("/", async (req, res) => {
-  });
-
-  router.delete("/:id", async (req, res) => {
   });
 
   return router;

@@ -44,7 +44,7 @@ export function ViewShoppingList({
       body: JSON.stringify({ id: itemId, checked, shoppingListId}),
       headers: { 'Content-Type': 'application/json' }
     }).then((res) => res.json())
-      .then(async () => {await getShoppingList()});
+      .then(() =>  getShoppingList());
   };
 
   const deleteShoppingList = () => {
@@ -59,7 +59,10 @@ export function ViewShoppingList({
       <EditShoppingList
         currentMeals={meals}
         currentShoppingList={shoppingList}
-        closeEdit={() => setEditShoppingList(false)}
+        closeEdit={() => {
+          setEditShoppingList(false)
+          getShoppingList()
+        }}
       />
     )
   }

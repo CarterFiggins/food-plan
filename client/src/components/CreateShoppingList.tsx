@@ -43,8 +43,8 @@ export function EditShoppingList({
   }, []);
 
   const currentShoppingListMap = _.reduce(currentShoppingList.shoppingItems, (ingredientsMap: any, shoppingListItem: any) => {
-    ingredientsMap.set(shoppingListItem.ingredient.id, {id: shoppingListItem.id, amount: shoppingListItem.units[0].amount, unit: shoppingListItem.units[0].unit, ingredient: shoppingListItem.ingredient})
-    return ingredientsMap
+    ingredientsMap.set(shoppingListItem.ingredient.id, {id: shoppingListItem.id, ingredient: shoppingListItem.ingredient})
+    return ingredientsMap;
   }, new Map())
 
   return (
@@ -100,9 +100,6 @@ export function CreateShoppingList({
 
   _.forEach(Array.from(selectedIngredients.values()), (item: IngredientItemInterface) => {
     const units:any = {}
-    if (item.ingredientUnit && item.ingredientAmount) {
-      units[item.ingredientUnit] = item.ingredientAmount
-    }
     shoppingList.set(item.ingredient.id, { ...item.ingredient, units, count: 0 })
   })
 
@@ -197,19 +194,6 @@ export function CreateShoppingList({
     })
   }
 
-  const addItem = (ingredientId: string, unit: string, amount: number) => {
-    setSelectedIngredients((prev) => {
-      const newMap = new Map(prev);
-      const ingredient = newMap.get(ingredientId)
-      if (ingredient) {
-        newMap.set(ingredientId, {...ingredient, ingredientUnit: unit, ingredientAmount: amount})
-      }
-      return newMap;
-    })
-  }
-
-
-
   const createShoppingList = () => {
     const shoppingItems = Array.from(shoppingList.values())
     if (_.isEmpty(shoppingItems) || !shoppingListName) {
@@ -230,7 +214,39 @@ export function CreateShoppingList({
   }
 
   const editShoppingList = () => {
-    // TODO edit the shopping list!
+    const shoppingItems = Array.from(shoppingList.values())
+    if (_.isEmpty(shoppingItems) || !shoppingListName) {
+      return;
+    }
+
+    const oldIngredients = _.map(Array.from(currentIngredients.values()), (shoppingItem) => {
+      return {
+        id: shoppingItem.ingredient.id,
+        shoppingItemId: shoppingItem.id
+      }
+    });
+
+    const editedMeals = Array.from(selectedMeals.values());
+    const oldMeals = Array.from(currentMeals.values());
+    const deletedMealsIds = _.map(_.differenceBy(oldMeals, editedMeals, 'id'), 'id');
+    const deletedShoppingItemIds = _.map(_.differenceBy(oldIngredients, shoppingItems, 'id'), 'shoppingItemId');
+    const newMeals = _.differenceBy(editedMeals, oldMeals, 'id');
+    const newShoppingItems = _.differenceBy(shoppingItems, oldIngredients, 'id');
+
+    fetch(`/shopping-list/${shoppingListId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        shoppingListId,
+        newShoppingItems,
+        deletedShoppingItemIds,
+        shoppingListName,
+        isFavorite,
+        newMeals,
+        deletedMealsIds,
+      }),
+    }).then((res) => res.json())
+      .then(() => closeEdit());
   }
 
   return (
@@ -243,7 +259,7 @@ export function CreateShoppingList({
         {shoppingListId ? (
           <div className="button-row">
             <button className="gray-btn" onClick={closeEdit}>Back</button>
-            <button className="green-btn" onClick={editShoppingList}>Edit</button>
+            <button className="green-btn" onClick={editShoppingList}>Save</button>
           </div>
         ): (
         <div className="button-row">
@@ -269,7 +285,7 @@ export function CreateShoppingList({
         </div>
         <div className="main-shopping-list">
           {_.map(_.orderBy(Array.from(shoppingList.values()), ['name']), (shoppingItem: any) => (
-            <ShoppingListItem key={shoppingItem.id} shoppingItem={shoppingItem} deleteItem={deleteItem} addItem={addItem} />
+            <ShoppingListItem key={shoppingItem.id} shoppingItem={shoppingItem} deleteItem={deleteItem} />
           ))}
         </div>
         <div className="side-selection">
@@ -291,68 +307,19 @@ export function CreateShoppingList({
 }
 
 function ShoppingListItem(
-  { shoppingItem, deleteItem, addItem }
+  { shoppingItem, deleteItem }
     : {
     shoppingItem: any,
     deleteItem: (id: string) => void,
-    addItem: (id: string, unit: string, amount: number) => void,
     }) {
-  const [showInput, setShowInputs] = useState<boolean>(false);
-  const [selectedUnit, setSelectedUnit] = useState<string>("whole");
-  const [selectedAmount, amountInput, setSelectedAmount] = useInput({
-    name: "Amount",
-    type: "number",
-    defaultValue: 0,
-  });
   const { units: itemUnits } = shoppingItem
-
-  const closeNewItem = () => {
-    setShowInputs(prev => !prev);
-    setSelectedUnit("whole");
-    setSelectedAmount(0);
-  }
-
-  const addNewItem = () => {
-    const numSelectedAmount = _.toNumber(selectedAmount)
-    if (!(numSelectedAmount <= 0 || !selectedUnit)) {
-      addItem(shoppingItem.id, selectedUnit, numSelectedAmount)
-      closeNewItem()
-    }
-  }
 
   return (
     <div className="shopping-item">
       <div className="item-name">
         <button className="close-icon" onClick={() => deleteItem(shoppingItem.id)}>x</button>
         <h3>{shoppingItem.name}</h3>
-        {showInput ? (
-          <div>
-            <button className="plus-icon" onClick={addNewItem}>Save</button>
-            <button className="close-icon" onClick={closeNewItem}>Close</button>
-          </div>
-        ) : (
-          <button className="plus-icon" onClick={closeNewItem}>+</button>
-        )}
       </div>
-      {showInput && (
-        <div className="shopping-input">
-          {amountInput}
-          <select
-            value={selectedUnit}
-            name="storageUnit"
-            id="unit"
-            onChange={(e) => setSelectedUnit(e.target.value)}
-          >
-            {_.map(units, (unit) => {
-              return (
-                <option key={unit} value={unit}>
-                  {unit}
-                </option>
-              );
-            })}
-          </select>
-        </div>
-      )}
       {_.map(itemUnits, (amount, unit) => (
         <div key={unit} className="unit-amount">
           {unit}: {amount}
