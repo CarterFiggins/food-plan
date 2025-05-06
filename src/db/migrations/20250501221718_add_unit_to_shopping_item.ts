@@ -6,7 +6,7 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid('id').primary().notNullable().unique().defaultTo(knex.raw("gen_random_uuid()"));
     table.float('amount').notNullable().defaultTo(0);
     table.string('unit').defaultTo('whole');
-    table.uuid('shopping_item_id').references('id').inTable('shopping_item');
+    table.uuid('shopping_item_id').references('id').inTable('shopping_item').onDelete('CASCADE');
     table.timestamps(true, true);
   })
 }

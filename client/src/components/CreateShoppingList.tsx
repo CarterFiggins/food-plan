@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { IngredientInterface, IngredientItemInterface, MealInterface, RecipeItemsInterfaceIngredient } from "../type/interfaces";
+import { IngredientInterface, IngredientItemInterface, MealInterface, RecipeItemsInterfaceIngredient, ViewListInterface } from "../type/interfaces";
 import _ from "lodash";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { units } from "../util/unitHelpers";
 import useInput from "../common/useInput";
 
@@ -21,19 +21,79 @@ export default function LoadCreateShoppingList() {
   return <div>{(ingredients && meals) ? <CreateShoppingList ingredients={_.orderBy(ingredients, ['name'])} meals={_.orderBy(meals, ['name'])} /> : <h1>Loading...</h1>}</div>;
 }
 
+export function EditShoppingList({
+  currentMeals,
+  currentShoppingList,
+  closeEdit,
+} : {
+  currentMeals: MealInterface[],
+    currentShoppingList: ViewListInterface,
+    closeEdit: () => void
+}) {
+  const [ingredients, setIngredients] = useState<IngredientInterface[]>([]);
+  const [meals, setMeals] = useState<MealInterface[]>([]);
+
+  useEffect(() => {
+    fetch("/ingredients")
+      .then((res) => res.json())
+      .then((data) => setIngredients(data));
+    fetch("/meals")
+      .then((res) => res.json())
+      .then((data) => setMeals(data));
+  }, []);
+
+  const currentShoppingListMap = _.reduce(currentShoppingList.shoppingItems, (ingredientsMap: any, shoppingListItem: any) => {
+    ingredientsMap.set(shoppingListItem.ingredient.id, {id: shoppingListItem.id, amount: shoppingListItem.units[0].amount, unit: shoppingListItem.units[0].unit, ingredient: shoppingListItem.ingredient})
+    return ingredientsMap
+  }, new Map())
+
+  return (
+    <div>
+      {(ingredients && meals) ?
+        (
+          <CreateShoppingList
+            ingredients={_.orderBy(ingredients, ['name'])}
+            meals={_.orderBy(meals, ['name'])}
+            isCurrentlyFavorite={currentShoppingList.is_favorite}
+            currentName={currentShoppingList.name}
+            shoppingListId={currentShoppingList.id}
+            currentIngredients={currentShoppingListMap}
+            currentMeals={new Map(Object.entries(_.keyBy(currentMeals, "id")))}
+            closeEdit={closeEdit}
+          />
+        ) : (
+          <h1>Loading...</h1>
+        )}
+    </div>
+  );
+}
+
 export function CreateShoppingList({
   ingredients,
   meals,
+  currentIngredients = new Map(),
+  currentMeals = new Map(),
+  isCurrentlyFavorite = false,
+  currentName = "",
+  shoppingListId = "",
+  closeEdit = () => {}
 }: {
   ingredients: IngredientInterface[];
   meals: MealInterface[];
+  currentIngredients?: Map<string, IngredientItemInterface>;
+  currentMeals?: Map<string, MealInterface>;
+  isCurrentlyFavorite?: boolean;
+  currentName?: string;
+  shoppingListId?: string
+  closeEdit?: () => void
 }) {
-  const [selectedIngredients, setSelectedIngredients] = useState<Map<string, IngredientItemInterface>>(new Map());
-  const [selectedMeals, setSelectedMeals] = useState<Map<string, MealInterface>>(new Map());
-  const [isFavorite, setIsFavorite] = useState<boolean>(false);
+  const [selectedIngredients, setSelectedIngredients] = useState<Map<string, IngredientItemInterface>>(currentIngredients);
+  const [selectedMeals, setSelectedMeals] = useState<Map<string, MealInterface>>(currentMeals);
+  const [isFavorite, setIsFavorite] = useState<boolean>(isCurrentlyFavorite);
   const [shoppingListName, nameInput] = useInput({
     name: "Name:",
     type: "text",
+    defaultValue: currentName,
   });
   const navigate = useNavigate();
   const shoppingList = new Map<string, any>()
@@ -163,34 +223,49 @@ export function CreateShoppingList({
         shoppingItems,
         shoppingListName,
         isFavorite,
+        meals: Array.from(selectedMeals.values())
       }),
     }).then((res) => res.json())
       .then(() => navigate(-1));
   }
 
+  const editShoppingList = () => {
+    // TODO edit the shopping list!
+  }
+
   return (
     <div>
-      <div className="title-row">
-        <button className="star-icon" onClick={() => setIsFavorite(prev => !prev)}>{isFavorite ? '★' : '☆'}</button>
-        <h2>New Shopping list</h2>
+      <div className="header-row">
+        <div className="title-row">
+          <button className="yellow-icon can-click-icon" onClick={() => setIsFavorite(prev => !prev)}>{isFavorite ? '★' : '☆'}</button>
+          <h2>New Shopping list</h2>
+        </div>
+        {shoppingListId ? (
+          <div className="button-row">
+            <button className="gray-btn" onClick={closeEdit}>Back</button>
+            <button className="green-btn" onClick={editShoppingList}>Edit</button>
+          </div>
+        ): (
         <div className="button-row">
           <button className="gray-btn" onClick={() => navigate(-1)}>Back</button>
           <button className="green-btn" onClick={createShoppingList}>Create</button>
         </div>
+        )}
       </div>
         {nameInput}
       <div className="create-shopping-container">
         <div className="side-selection">
-            {_.map(meals, (meal) => (
-              <div key={meal.id}>
-                <input
-                  type="checkbox"
-                  checked={selectedMeals.has(meal.id)}
-                  onChange={() => handleMealSelection(meal)}
-                />
-                {meal.name}
-              </div>
-            ))}
+          <h2>Meals</h2>
+          {_.map(meals, (meal) => (
+            <div key={meal.id}>
+              <input
+                type="checkbox"
+                checked={selectedMeals.has(meal.id)}
+                onChange={() => handleMealSelection(meal)}
+              />
+              {meal.name}
+            </div>
+          ))}
         </div>
         <div className="main-shopping-list">
           {_.map(_.orderBy(Array.from(shoppingList.values()), ['name']), (shoppingItem: any) => (
@@ -198,6 +273,7 @@ export function CreateShoppingList({
           ))}
         </div>
         <div className="side-selection">
+          <h2>Ingredients</h2>
           {_.map(ingredients, (ingredient) => (
              <div key={ingredient.id}>
               <input

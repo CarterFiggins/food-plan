@@ -20,6 +20,11 @@ export interface ShoppingListInterface {
 }
 
 export interface ViewShoppingListInterface {
+  meals: MealInterface[];
+  shoppingList: ViewListInterface;
+}
+
+export interface ViewListInterface {
   id: string;
   name: string;
   is_favorite: boolean;
@@ -30,6 +35,13 @@ export interface ShoppingItemInterface {
   id: string;
   ingredient: IngredientInterface;
   is_checked: boolean;
+  units: UnitItemInterface[];
+}
+
+export interface UnitItemInterface {
+  id: string;
+  amount: number;
+  unit: string;
 }
 
 export interface MealPlanInterface {

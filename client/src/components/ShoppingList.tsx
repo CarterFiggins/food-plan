@@ -34,17 +34,20 @@ export function ShoppingList({
 
   return (
     <div>
-      <div>
-        <h3>
-          <Link to="/create-shopping-list">Create Shopping List</Link>
-        </h3>
+      <div className="header-row">
         <h2>Shopping list</h2>
+        <h3>
+          <Link className="gray-btn" to="/create-shopping-list">Create Shopping List</Link>
+        </h3>
       </div>
       <div>
-        {_.map(data, (list) => (
+        {_.map(_.orderBy(data, ['is_favorite', 'name'], ['desc', 'asc']), (list) => (
           <h3 key={list.id}>
             <Link to={`/shopping-list/${list.id}`}>
-             {list.is_favorite ? "*" : ""} {list.name}
+              {list.is_favorite && (
+                <span className="yellow-icon">★</span>
+              )}
+              {list.name}
             </Link>
           </h3>
         ))}
